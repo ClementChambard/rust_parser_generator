@@ -1,5 +1,6 @@
 mod example1;
+mod example2;
 
 fn main() {
-    example1::run();
+    example2::run();
 }

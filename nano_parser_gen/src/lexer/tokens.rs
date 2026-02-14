@@ -1,3 +1,6 @@
+use crate::error::error_header;
+use crate::error::source_quote::error_style;
+
 use super::lexer_struct::Lexer;
 use super::source_file::SourceFile;
 use super::Token;
@@ -51,17 +54,29 @@ impl<'l, K> Iterator for Tokens<'l, K> {
             let (len, i) = if let Some((a, b)) = result {
                 (a, b)
             } else {
-                panic!("ERROR lexer");
-                // let loc = self
-                //     .source
-                //     .range_to_location(self.position..self.position + 1);
-                // report_error(&loc, &format!("unknown start of token: {}", &string[0..1]));
+                let loc = self
+                    .source
+                    .range_to_location(self.position..self.position + 1);
+
+                error_header("lexer error");
+                self.source
+                    .quote(loc.line..loc.line + 1)
+                    .highlight(&loc)
+                    .underline('~', error_style())
+                    .color(error_style())
+                    .comment(
+                        format!("unknown start of token: {}", &string[0..1]),
+                        error_style(),
+                    )
+                    .dump();
+
                 // self.position += 1;
                 // return Some(Token {
                 //     kind: self.lexer.error(),
                 //     loc,
                 //     text: string[0..1].to_string(),
                 // });
+                panic!("ERROR lexer");
             };
 
             let loc = self
